@@ -1,0 +1,15 @@
+{
+  "name": "Brain Battery by Helpset",
+  "short_name": "Brain Battery",
+  "description": "A visual energy check-in for children — show how full your battery is, let the phone say it out loud, and see what helps you recharge. Works fully offline. Free, no ads, no account.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6f3ec",
+  "theme_color": "#266e6e",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
