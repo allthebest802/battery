@@ -464,6 +464,30 @@ const CARD_GROUPS = [
 const BUILTIN_CARDS = CARD_GROUPS.flatMap((g) => g.cards);
 
 /* ============================================================
+   Recharge & sensory — cards specific to this app, with
+   tailored spoken phrases ("Maybe a big squeeze would help.")
+============================================================ */
+const RECHARGE_GROUP = {
+  title: "Recharge & sensory",
+  cards: [
+    ["squeeze", "\u{1FAC2}", "Big squeeze", "Maybe a big squeeze would help."],
+    ["den", "\u{1F6CC}", "Blanket den", "Maybe my blanket den would help."],
+    ["sofa", "\u{1F6CB}\uFE0F", "Sofa time", "Maybe some sofa time would help."],
+    ["fidget", "\u{1FA80}", "Fidget toy", "Maybe my fidget toy would help."],
+    ["bounce", "\u{1F938}", "Bouncing", "Maybe some bouncing would help."],
+    ["run", "\u{1F3C3}", "Run around", "Maybe running around would help."],
+    ["stretch", "\u{1F9D8}", "Stretching", "Maybe some stretching would help."],
+    ["freshair", "\u{1F343}", "Fresh air", "Maybe some fresh air would help."],
+    ["water", "\u{1F4A7}", "Water play", "Maybe water play would help."],
+    ["warmdrink", "\u2615", "Warm drink", "Maybe a warm drink would help."],
+    ["darkquiet", "\u{1F56F}\uFE0F", "Dim and quiet", "Maybe somewhere dim and quiet would help."],
+    ["squish", "\u{1F9F8}", "Soft toy", "Maybe my soft toy would help."]
+  ].map(([id, emoji, label, say]) => ({ id: "r:" + id, emoji, label, say }))
+};
+const PICKER_GROUPS = [RECHARGE_GROUP].concat(CARD_GROUPS);
+const ALL_CARDS = RECHARGE_GROUP.cards.concat(BUILTIN_CARDS);
+
+/* ============================================================
    Zones — colour, word, and what "Tell someone" says
 ============================================================ */
 const ZONES = [
@@ -484,7 +508,7 @@ let state = {
   level: 70,
   speak: true,
   locked: false,
-  helps: ["b:headphones", "b:quiet", "b:cuddle", "b:breathe", "b:drink", "b:play"],
+  helps: ["b:headphones", "b:quiet", "b:cuddle", "b:breathe", "r:squeeze", "r:den", "r:fidget", "r:freshair", "b:drink", "b:play"],
   log: [] // { t: epoch ms, level }
 };
 let editing = false;
@@ -560,7 +584,7 @@ function resizeImage(file) {
 }
 function findCard(id) {
   if (!id) return null;
-  return BUILTIN_CARDS.find((c) => c.id === id) || customCards.find((c) => c.id === id) || null;
+  return ALL_CARDS.find((c) => c.id === id) || customCards.find((c) => c.id === id) || null;
 }
 
 /* ============================================================
@@ -735,7 +759,7 @@ function renderHelps() {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".hc.speaking").forEach((el) => el.classList.remove("speaking"));
         btn.classList.add("speaking");
-        const phrase = "Maybe " + card.label.toLowerCase() + " would help.";
+        const phrase = card.say || ("Maybe " + card.label.toLowerCase() + " would help.");
         if (state.speak) speak(phrase); else toast(phrase);
         if (speakTimer) clearTimeout(speakTimer);
         speakTimer = setTimeout(() => btn.classList.remove("speaking"), 1800);
@@ -744,7 +768,7 @@ function renderHelps() {
     helpsGrid.appendChild(btn);
   });
 
-  if (editing && state.helps.length < 12) {
+  if (editing && state.helps.length < 16) {
     const add = document.createElement("button");
     add.className = "hc add-tile";
     add.setAttribute("aria-label", "Add a card");
@@ -785,7 +809,7 @@ function makePickEl(card) {
 
 function renderPickerGrids() {
   builtinGroups.innerHTML = "";
-  CARD_GROUPS.forEach((group) => {
+  PICKER_GROUPS.forEach((group) => {
     const title = document.createElement("div");
     title.className = "section-title";
     title.textContent = group.title;
